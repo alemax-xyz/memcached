@@ -1,3 +1,8 @@
+#
+# This is a multi-stage build.
+# Actual build is at the very end.
+#
+
 FROM library/ubuntu:xenial AS build
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -11,11 +16,11 @@ RUN apt-get update && \
 RUN mkdir -p /build/image
 WORKDIR /build
 RUN apt-get download \
-    memcached \
-    libevent-2.0-5 \
-    libsasl2-2 \
-    libsasl2-modules-db \
-    libdb5.3
+        memcached \
+        libevent-2.0-5 \
+        libsasl2-2 \
+        libsasl2-modules-db \
+        libdb5.3
 RUN for file in *.deb; do dpkg-deb -x ${file} image/; done
 
 WORKDIR /build/image
