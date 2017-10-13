@@ -1,19 +1,14 @@
-#
-# This is a multi-stage build.
-# Actual build is at the very end.
-#
-
 FROM library/ubuntu:xenial AS build
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV LANG C.UTF-8
-RUN apt-get update && \
-    apt-get install -y \
+ENV LANG=C.UTF-8
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get update \
+ && apt-get install -y \
         python-software-properties \
         software-properties-common \
         apt-utils
 
-RUN mkdir -p /build/image
+RUN mkdir -p /build /rootfs
 WORKDIR /build
 RUN apt-get download \
         memcached \
@@ -21,19 +16,23 @@ RUN apt-get download \
         libsasl2-2 \
         libsasl2-modules-db \
         libdb5.3
-RUN for file in *.deb; do dpkg-deb -x ${file} image/; done
+RUN find *.deb | xargs -I % dpkg-deb -x % /rootfs
 
-WORKDIR /build/image
+WORKDIR /rootfs
 RUN rm -rf \
         etc \
         lib \
         usr/include \
         usr/share
 
+WORKDIR /
+
+
 FROM clover/base
 
-WORKDIR /
-COPY --from=build /build/image /
+ENV LANG=C.UTF-8
+
+COPY --from=build /rootfs /
 
 CMD ["memcached", "-u", "root", "-v", "-m", "64", "-c", "1024", "-t", "4", "-I", "1m", "-b", "1024", "-R", "20"]
 
