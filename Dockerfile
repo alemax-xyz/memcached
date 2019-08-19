@@ -24,6 +24,8 @@ RUN rm -rf \
         usr/include \
         usr/share
 
+COPY init/ etc/init/
+
 WORKDIR /
 
 
@@ -33,6 +35,4 @@ ENV LANG=C.UTF-8
 
 COPY --from=build /rootfs /
 
-CMD ["memcached", "-u", "root", "-v", "-m", "64", "-c", "1024", "-t", "4", "-I", "1m", "-b", "1024", "-R", "20"]
-
-EXPOSE 11211
+EXPOSE ${MEMCACHED_TCP_PORT:-11211}/tcp ${MEMCACHED_UDP_PORT:-11211}/udp
