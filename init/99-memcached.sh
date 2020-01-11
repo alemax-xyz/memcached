@@ -1,6 +1,6 @@
 #!/bin/sh
 
-memcached \
+exec memcached \
 	--port=${MEMCACHED_TCP_PORT:-11211} \
 	--udp-port=${MEMCACHED_UDP_PORT:-11211} \
 	${MEMCACHED_ENABLE_SHUTDOWN:+--enable-shutdown} \
