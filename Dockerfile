@@ -1,21 +1,20 @@
-FROM library/ubuntu:focal AS build
+FROM library/debian:stable-slim AS build
 
 ENV LANG=C.UTF-8
+
 RUN export DEBIAN_FRONTEND=noninteractive \
  && apt-get update \
  && apt-get install -y \
         --no-install-recommends \
-        software-properties-common \
         apt-utils
 
 RUN mkdir -p /build /rootfs
 WORKDIR /build
 RUN apt-get download \
         memcached \
-        libevent-2.1-7 \
+        libevent-2.1-7t64 \
         libsasl2-2 \
-        libsasl2-modules-db \
-        libdb5.3
+        libsasl2-modules-db
 RUN find *.deb | xargs -I % dpkg-deb -x % /rootfs
 
 WORKDIR /rootfs
@@ -25,7 +24,7 @@ RUN rm -rf \
         usr/include \
         usr/share
 
-COPY init/ etc/init/
+COPY etc/ etc/
 
 WORKDIR /
 
