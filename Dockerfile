@@ -3,10 +3,7 @@ FROM library/debian:stable-slim AS build
 ENV LANG=C.UTF-8
 
 RUN export DEBIAN_FRONTEND=noninteractive \
- && apt-get update \
- && apt-get install -y \
-        --no-install-recommends \
-        apt-utils
+ && apt-get update
 
 RUN mkdir -p /build /rootfs
 WORKDIR /build
@@ -22,6 +19,7 @@ RUN rm -rf \
         etc \
         lib \
         usr/include \
+        usr/lib/tmpfiles.d \
         usr/share
 
 COPY etc/ etc/
@@ -31,7 +29,9 @@ WORKDIR /
 
 FROM clover/base
 
-ENV LANG=C.UTF-8
+ENV LANG=C.UTF-8 \
+    MEMCACHED_TCP_PORT=11211 \
+    MEMCACHED_UDP_PORT=11211
 
 COPY --from=build /rootfs /
 
