@@ -1,0 +1,6 @@
+adduser
+debconf
+init-system-helpers
+lsb-base
+perl
+perl:any
